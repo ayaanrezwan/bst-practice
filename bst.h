@@ -177,10 +177,20 @@ void BST<T>::clear() {
 // Path return function to arrive at an element
 template <typename T>
 vector<TreeNode<T>*>* BST<T>::path(const T& element) const {
-    vector<TreeNode<T>*>* v = new vector<TreeNode<T>*>();
-    TreeNode<T>* current = root;
-    
+    vector<TreeNode<T>*>* v = new vector<TreeNode<T>*>();   // Allocating memory for the vector
+    TreeNode<T>* current = root;    // Creating a helper pointer
 
+    while (current != nullptr) {    // Loop until hits end of subtree
+        v->push_back(current);  // Append current pointer to the vector (add onto)
+        if (element < current -> element) {
+            current = current -> left;  // If target element is less than current, move left
+        } else if (element > current -> element) {
+            current = current -> right; // If target element is more than current, move right
+        } else {
+            break;  // If element not found, break
+        }
+    }
+    return v;   // Return the resulting array
 }
 
 // Boolean removal function, gets rid of one element from the array
