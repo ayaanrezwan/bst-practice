@@ -94,25 +94,27 @@ bool BST<T>::insert(const T& element) {
         root = createNewNode(element);
     } else {
         // Helper pointers (only allocate if needed inside of logic statement)
-        TreeNode<T>* current = root;
-        TreeNode<T>* parent = nullptr;
-        while (current != nullptr) {
+        TreeNode<T>* current = root;    // Used mainly as a "next"
+        TreeNode<T>* parent = nullptr;  // Used to keep track of current node to place element as its child
+        while (current != nullptr) {    // Loop until hit the end of a branch
             if (element < current -> element) {
                 parent = current;
-                current = current -> left;
+                current = current -> left;  // If insertion element is less than the current element, move left
             } else if (element > current -> element) {
                 parent = current;
-                current = current -> right;
+                current = current -> right; // If the insertion element is more than the current element, move right
             } else {
-                return false;   // Duplicate detected
+                return false;   // Duplicate detected, no insertion or size increase
             }
         }
-        if (element < parent -> element) {
-            parent -> left = createNewNode(element);
+        if (element < parent -> element) {  // Placing element as the correct child
+            parent -> left = createNewNode(element);    
         } else {
             parent -> right = createNewNode(element);
         }
     }
     size++;
-    return true;
+    return true;    // Increasing size and returning true to indicate successful insertion
 }
+
+// Boolean removal function, gets rid of one element from the array
