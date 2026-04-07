@@ -1,0 +1,86 @@
+#include "treenode.h"
+#include <vector>
+using namespace std;
+
+// Class implementation
+template <typename T>
+class BST{
+    public: // Member functions + "public wrapped" functions
+        BST();  // Default constructor
+        BST(const T elements[], int arraySize); // Array constructor
+        BST(const BST<T>& tree);    // Copy constructor
+        ~BST(); // Destructor
+        bool search(const T& element) const;    // Searches for a given element, true if exists, false if not
+        virtual bool insert(const T& element);  // Insert an element at the correct location, true if inserted, false if duplicate
+        virtual bool remove(const T& element);  // Removes the inputted element, true if removed, false if DNE
+        void inorder() const;   // Traverses BST in order (Left -> Root -> Right recursively), increasing order
+        void preorder() const;  // Traverses BST preorder (Root -> Left -> Right)
+        void postorder() const; // Traverses BST preorder (Left -> Right -> Root)
+        int getSize() const;    // Returns size of the BST
+        void clear();   // Remove all nodes from tree (used for destructor)
+        vector<TreeNode<T>*>* path(const T& element) const; // Returns a pointer to a vector which holds a path of points to reach the given element
+
+        // --- IMPLEMENT ITERATORS HERE ---
+
+    protected: // Protected functions/variables (accessible to child classes)
+        TreeNode<T>* root;
+        int size;
+        virtual TreeNode<T>* createNewNode(const T& element);
+    
+    private: // Recursive helper functions that are wrapped in public
+        void inorder(const TreeNode<T>* root) const;    // Recursive algorithm for inorder
+        void preorder(const TreeNode<T>* root) const;   // Recursive algorithm for preorder
+        void postorder(const TreeNode<T>* root) const;  // Recursive algorithm for postorder
+        void copy(const TreeNode<T>* root); // Recursive algorithm for copy (copy constructor)
+        void clear(const TreeNode<T>* root);    // Recursive algorithm for clearing the bst (destructor)
+};
+
+// Default constructor implementation
+template <typename T>
+BST<T>::BST() {
+    root = nullptr; // Empty BST
+    size = 0;   // Size 0 because empty
+}
+
+// Array constructor for BST (takes an array and creates a BST from its indices)
+template <typename T>
+BST<T>::BST(const T elements[], int arraySize) {
+    root = nullptr;
+    size =  0;
+
+    for (int i = 0; i < arraySize; i++) {
+        insert(elements[i]);    // Iterate through the array and add each index to the BST
+    }
+}
+
+// Copy constructor
+template <typename T>
+BST<T>::BST(const BST<T>& tree) {
+    root = nullptr;
+    size = 0;
+    copy(tree.root);    // Calls copy function which is implemented later
+}
+
+// Destructor
+
+
+
+
+template <typename T>
+bool BST<T>::search(const T& element) const{    // Searching tree for element
+    TreeNode<T>* current = this;    // Start at root
+
+    while (current != nullptr) {    // Repeat until hits end of the tree
+        if (current -> element == element) {
+            return true;
+
+        } else if (element < current -> element) {  // If element is less, go left
+            current = current->left;
+
+        } else {    // If element is greater, go right
+            current = current->right;
+
+        }
+    }
+    return false;   // If nothing is found, return false
+}
