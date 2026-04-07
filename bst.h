@@ -97,20 +97,20 @@ bool BST<T>::insert(const T& element) {
         TreeNode<T>* current = root;
         TreeNode<T>* parent = nullptr;
         while (current != nullptr) {
-            if (element < current->element) {
+            if (element < current -> element) {
                 parent = current;
                 current = current -> left;
-            } else if (element > current->element) {
+            } else if (element > current -> element) {
                 parent = current;
-                current = current->right;
+                current = current -> right;
             } else {
                 return false;   // Duplicate detected
             }
         }
-        if (element < parent->element) {
-            parent->left = createNewNode(element);
+        if (element < parent -> element) {
+            parent -> left = createNewNode(element);
         } else {
-            parent->right = createNewNode(element);
+            parent -> right = createNewNode(element);
         }
     }
     size++;
