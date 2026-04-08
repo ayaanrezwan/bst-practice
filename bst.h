@@ -2,6 +2,7 @@
 #define BST_H
 
 #include "treenode.h"
+#include "iterator.h"
 #include <vector>
 using namespace std;
 
@@ -23,7 +24,13 @@ class BST{
         void clear();   // Remove all nodes from tree (used for destructor)
         vector<TreeNode<T>*>* path(const T& element) const; // Returns a pointer to a vector which holds a path of points to reach the given element
 
-        // --- IMPLEMENT ITERATORS HERE ---
+        Iterator<T> begin() const { // Returns iterator for the first node (root)
+            return Iterator<T>(root);
+        };
+
+        Iterator<T> end() const {   // Returns iterator for the end
+            return Iterator<T>(nullptr);
+        };
 
     protected: // Protected functions/variables (accessible to child classes)
         TreeNode<T>* root;
