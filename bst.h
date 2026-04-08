@@ -1,3 +1,6 @@
+#ifndef BST_H  // Header Guard
+#define BST_H
+
 #include "treenode.h"
 #include <vector>
 using namespace std;
@@ -59,6 +62,16 @@ BST<T>::BST(const BST<T>& tree) {
     root = nullptr;
     size = 0;
     copy(tree.root);    // Calls copy function which is implemented later
+}
+
+// Recursive copy function from the given subtree
+template <typename T>
+void BST<T>::copy(const TreeNode<T>* root) {
+    if (root != nullptr) {
+        insert(root->element);  // preorder traversal (copy first, then move)
+        copy(root -> left);
+        copy(root -> right);
+    }
 }
 
 // Destructor
@@ -196,10 +209,57 @@ vector<TreeNode<T>*>* BST<T>::path(const T& element) const {
 // Boolean removal function, gets rid of one element from the array
 template <typename T>
 bool BST<T>::remove(const T& element) {
-    if (!search(element)) { // Checking if element exists in the BST
-        return false;
-    } else {
-        
-
+    // Locate the node to be deleted and also its parent
+    TreeNode<T>* parent = nullptr;
+    TreeNode<T>* current = root;
+    while (current != nullptr) {    // Repeat until an end is hit
+        if (element < current -> element) {
+            parent = current;
+            current = current -> left;  // If target element is less than current element, move left
+        } else if(element > current -> element) {
+            parent = current;
+            current = current -> right; // If target element is more than current element, move right
+        } else {
+            break;   // Element found and is equal to current or end is hit
+        }
     }
+    if (current == nullptr) {
+        return false;   // Inputted element is not in the tree
+    }
+
+    // CASE ONE: Current has no left children (no future nodes are less than current element)
+    if (current -> left == nullptr) {
+        if (parent == nullptr) {
+            root = current -> right;    // If the element is the root, then the new root is its right child
+        } else {
+            if (element < parent -> element) {
+                parent -> left = current -> right;
+            } else {
+                parent -> right = current -> right;
+            }
+        }
+        delete current; // Delete the current node (the target element)
+    } else {  // CASE TWO: Current node has a left child (must find rightmost in its subtree to rotate)
+        TreeNode<T>* parentOfRightMostNode = current;
+        TreeNode<T>* rightMostNode = current -> left;
+
+        while (rightMostNode -> right != nullptr) { // Repeat until the rightmost node is hit
+            parentOfRightMostNode = rightMostNode;
+            rightMostNode = rightMostNode -> right; // Shifting both the parent of and rightmost node to the right
+        }
+
+        // Replace element in current with the rightmost element (removes the target)
+        current -> element = rightMostNode -> element;
+
+        // Take the parent of the rightmost node (that replaced the target) and refactor
+        if (parentOfRightMostNode -> right == rightMostNode) {  // Verify that the right node is selected
+            parentOfRightMostNode -> right = rightMostNode -> left;
+        } else {    // EDGE CASE: the rightmost node is actually the target
+            parentOfRightMostNode -> left = rightMostNode -> left;  // Sets the sibling of target to its left child
+        }
+    }
+    size--;
+    return true;
 }
+
+#endif
