@@ -25,41 +25,23 @@ class AVLTree : public BST<T>
 public:
   AVLTree();
   AVLTree(const T elements[], int arraySize);
-  //  AVLTree(BST<T> &tree); left as exercise
-  //  ~AVLTree(); left as exercise
-  //  The = operator is also left as an exercise
-  bool insert(const T& e); // Redefine insert defined in BST
-  bool remove(const T& e); // Redefine remove defined in BST
+  bool insert(const T& e);
+  bool remove(const T& e);
 
-  // Redefine createNewNode defined in BST
   AVLTreeNode<T>* createNewNode(const T& e);
 
-  // Balance the nodes in the path from the specified
-  // node to the root if necessary 
   void balancePath(const T& e);
-
-  // Update the height of a specified node 
   void updateHeight(AVLTreeNode<T>* node);
-
-  // Return the balance factor of the node 
   int balanceFactor(AVLTreeNode<T>* node);
 
-  // Balance LL (see Figure 26.1) 
+  // Original 4 individual rotation functions (kept for reference)
   void balanceLL(TreeNode<T>* A, TreeNode<T>* parentOfA);
-
-  // Balance LR (see Figure 26.3) 
   void balanceLR(TreeNode<T>* A, TreeNode<T>* parentOfA);
-
-  // Balance RR (see Figure 26.2) 
   void balanceRR(TreeNode<T>* A, TreeNode<T>* parentOfA);
-
-  // Balance RL (see Figure 26.4) 
   void balanceRL(TreeNode<T>* A, TreeNode<T>* parentOfA);
 
-  // Implementing a double rotate used for LR or RL
+  // Combined rotation functions
   void doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy);
-
-    // Implementing a single rotate used for LL or RR
   void singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy);
 };
 
@@ -92,12 +74,11 @@ bool AVLTree<T>::insert(const T& e)
 {
   bool successful = BST<T>::insert(e);
   if (!successful)
-    return false; // element is already in the tree
+    return false;
   else
-    // Balance from element to the root if necessary
     balancePath(e);
 
-  return true; // element is inserted
+  return true;
 }
 
 template <typename T>
@@ -116,16 +97,16 @@ void AVLTree<T>::balancePath(const T& e)
       case -2:
         if (balanceFactor(
             static_cast<AVLTreeNode<T>*>(((*A).left))) <= 0)
-          balanceLL(A, parentOfA); // Perform LL rotation
+          balanceLL(A, parentOfA);
         else
-          balanceLR(A, parentOfA); // Perform LR rotation
+          balanceLR(A, parentOfA);
         break;
       case +2:
         if (balanceFactor(
              static_cast<AVLTreeNode<T>*>(((*A).right))) >= 0)
-          balanceRR(A, parentOfA); // Perform RR rotation
+          balanceRR(A, parentOfA);
         else
-          balanceRL(A, parentOfA); // Perform RL rotation
+          balanceRL(A, parentOfA);
     }
   }
 }
@@ -133,12 +114,12 @@ void AVLTree<T>::balancePath(const T& e)
 template <typename T>
 void AVLTree<T>::updateHeight(AVLTreeNode<T>* node)
 {
-  if (node->left == nullptr && node->right == nullptr) // node is a leaf
+  if (node->left == nullptr && node->right == nullptr)
     node->height = 0;
-  else if (node->left == nullptr) // node has no left subtree
+  else if (node->left == nullptr)
     node->height =
       1 + (*static_cast<AVLTreeNode<T>*>((node->right))).height;
-  else if (node->right == nullptr) // node has no right subtree
+  else if (node->right == nullptr)
     node->height =
       1 + (*static_cast<AVLTreeNode<T>*>((node->left))).height;
   else
@@ -150,9 +131,9 @@ void AVLTree<T>::updateHeight(AVLTreeNode<T>* node)
 template <typename T>
 int AVLTree<T>::balanceFactor(AVLTreeNode<T>* node)
 {
-  if (node->right == nullptr) // node has no right subtree
+  if (node->right == nullptr)
     return -node->height;
-  else if (node->left == nullptr) // node has no left subtree
+  else if (node->left == nullptr)
     return +node->height;
   else
     return (*static_cast<AVLTreeNode<T>*>((node->right))).height -
@@ -162,7 +143,7 @@ int AVLTree<T>::balanceFactor(AVLTreeNode<T>* node)
 template <typename T>
 void AVLTree<T>::balanceLL(TreeNode<T>* A, TreeNode<T>* parentOfA)
 {
-  TreeNode<T>* B = (*A).left; // A is left-heavy and B is left-heavy
+  TreeNode<T>* B = (*A).left;
 
   if (A == root)
     root = B;
@@ -172,8 +153,8 @@ void AVLTree<T>::balanceLL(TreeNode<T>* A, TreeNode<T>* parentOfA)
     else
       parentOfA->right = B;
 
-  A->left = B->right; // Make T2 the left subtree of A
-  B->right = A; // Make A the left child of B
+  A->left = B->right;
+  B->right = A;
   updateHeight(static_cast<AVLTreeNode<T>*>(A));
   updateHeight(static_cast<AVLTreeNode<T>*>(B));
 }
@@ -181,8 +162,8 @@ void AVLTree<T>::balanceLL(TreeNode<T>* A, TreeNode<T>* parentOfA)
 template <typename T>
 void AVLTree<T>::balanceLR(TreeNode<T>* A, TreeNode<T>* parentOfA)
 {
-  TreeNode<T>* B = A->left; // A is left-heavy
-  TreeNode<T>* C = B->right; // B is right-heavy
+  TreeNode<T>* B = A->left;
+  TreeNode<T>* C = B->right;
 
   if (A == root)
     root = C;
@@ -192,12 +173,11 @@ void AVLTree<T>::balanceLR(TreeNode<T>* A, TreeNode<T>* parentOfA)
     else
       parentOfA->right = C;
 
-  A->left = C->right; // Make T3 the left subtree of A
-  B->right = C->left; // Make T2 the right subtree of B
+  A->left = C->right;
+  B->right = C->left;
   C->left = B;
   C->right = A;
 
-  // Adjust heights
   updateHeight(static_cast<AVLTreeNode<T>*>(A));
   updateHeight(static_cast<AVLTreeNode<T>*>(B));
   updateHeight(static_cast<AVLTreeNode<T>*>(C));
@@ -206,7 +186,6 @@ void AVLTree<T>::balanceLR(TreeNode<T>* A, TreeNode<T>* parentOfA)
 template <typename T>
 void AVLTree<T>::balanceRR(TreeNode<T>* A, TreeNode<T>* parentOfA)
 {
-  // A is right-heavy and B is right-heavy
   TreeNode<T>* B = A->right;
 
   if (A == root)
@@ -217,7 +196,7 @@ void AVLTree<T>::balanceRR(TreeNode<T>* A, TreeNode<T>* parentOfA)
     else
       parentOfA->right = B;
 
-  A->right = B->left; // Make T2 the right subtree of A
+  A->right = B->left;
   B->left = A;
   updateHeight(static_cast<AVLTreeNode<T>*>(A));
   updateHeight(static_cast<AVLTreeNode<T>*>(B));
@@ -226,8 +205,8 @@ void AVLTree<T>::balanceRR(TreeNode<T>* A, TreeNode<T>* parentOfA)
 template <typename T>
 void AVLTree<T>::balanceRL(TreeNode<T>* A, TreeNode<T>* parentOfA)
 {
-  TreeNode<T>* B = A->right; // A is right-heavy
-  TreeNode<T>* C = B->left; // B is left-heavy
+  TreeNode<T>* B = A->right;
+  TreeNode<T>* C = B->left;
 
   if (A == root)
     root = C;
@@ -237,12 +216,11 @@ void AVLTree<T>::balanceRL(TreeNode<T>* A, TreeNode<T>* parentOfA)
     else
       parentOfA->right = C;
 
-  A->right = C->left; // Make T2 the right subtree of A
-  B->left = C->right; // Make T3 the left subtree of B
+  A->right = C->left;
+  B->left = C->right;
   C->left = A;
   C->right = B;
 
-  // Adjust heights
   updateHeight(static_cast<AVLTreeNode<T>*>(A));
   updateHeight(static_cast<AVLTreeNode<T>*>(B));
   updateHeight(static_cast<AVLTreeNode<T>*>(C));
@@ -252,9 +230,8 @@ template <typename T>
 bool AVLTree<T>::remove(const T& e)
 {
   if (root == nullptr)
-    return false; // Element e is not in the tree
+    return false;
 
-  // Locate the node to be deleted and also locate its parent node
   TreeNode<T>* parent = nullptr;
   TreeNode<T>* current = root;
   while (current != nullptr)
@@ -270,16 +247,14 @@ bool AVLTree<T>::remove(const T& e)
       current = current->right;
     }
     else
-      break; // Element e is in the tree pointed by current
+      break;
   }
 
   if (current == nullptr)
-    return false; // Element e is not in the tree
+    return false;
 
-  // Case 1: current has no left children (See Figure 23.6)
   if (current->left == nullptr)
   {
-    // Connect the parent with the right child of the current node
     if (parent == nullptr)
       root = current->right;
     else
@@ -289,85 +264,55 @@ bool AVLTree<T>::remove(const T& e)
       else
         parent->right = current->right;
 
-      // Balance the tree if necessary
       balancePath(parent->element);
     }
   }
   else
   {
-    // Case 2: The current node has a left child
-    // Locate the rightmost node in the left subtree of
-    // the current node and also its parent
     TreeNode<T>* parentOfRightMost = current;
     TreeNode<T>* rightMost = current->left;
 
     while (rightMost->right != nullptr)
     {
       parentOfRightMost = rightMost;
-      rightMost = rightMost->right; // Keep going to the right
+      rightMost = rightMost->right;
     }
 
-    // Replace the element in current by the element in rightMost
     current->element = rightMost->element;
 
-    // Eliminate rightmost node
     if (parentOfRightMost->right == rightMost)
       parentOfRightMost->right = rightMost->left;
     else
-      // Special case: parentOfRightMost is current
       parentOfRightMost->left = rightMost->left;
 
-    // Balance the tree if necessary
     balancePath(parentOfRightMost->element);
   }
 
   size--;
-  return true; // Element inserted
+  return true;
 }
 
+// ============================================================
+// COMBINED ROTATION FUNCTIONS
+// ============================================================
 
-// ----- Potential test functions -----
-template <typename T>
-void AVLTree<T>::doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
-{
-    // Pick child and grandchild based on imbalance direction
-    TreeNode<T>* B = leftHeavy ? A->left  : A->right;
-    TreeNode<T>* C = leftHeavy ? B->right : B->left;
-
-    // Reattach C to parent (identical in all 4 rotations)
-    if (A == root)
-        root = C;
-    else if (parentOfA->left == A)
-        parentOfA->left = C;
-    else
-        parentOfA->right = C;
-
-    // Rewire A, B, C
-    if (leftHeavy) {        // LR case
-        A->left  = C->right;
-        B->right = C->left;
-        C->left  = B;
-        C->right = A;
-    } else {                // RL case
-        A->right = C->left;
-        B->left  = C->right;
-        C->left  = A;
-        C->right = B;
-    }
-
-    // Update heights bottom-up (A and B are now children of C)
-    updateHeight(static_cast<AVLTreeNode<T>*>(A));
-    updateHeight(static_cast<AVLTreeNode<T>*>(B));
-    updateHeight(static_cast<AVLTreeNode<T>*>(C));
-}
+// --- singleRotate ---
+// Replaces both balanceLL (leftHeavy = true) and balanceRR (leftHeavy = false).
+//
+// LL (leftHeavy = true):        RR (leftHeavy = false):
+//       A            B               A           B
+//      / \          / \              / \         / \
+//     B   T3  →   C   A            T1  B   →   A   C
+//    / \             / \               / \    / \
+//   C   T2         T2  T3            T2  C   T1  T2
 
 template <typename T>
 void AVLTree<T>::singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
 {
-    // Pick child based on imbalance direction
+    // 1. Pick child B from A's heavy side
     TreeNode<T>* B = leftHeavy ? A->left : A->right;
 
-    // Reattach B to parent (identical in both LL and RR cases)
+    // 2. Reattach B where A was (parent linkage — identical for both cases)
     if (A == root)
         root = B;
     else if (parentOfA->left == A)
@@ -375,19 +320,66 @@ void AVLTree<T>::singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftH
     else
         parentOfA->right = B;
 
-    // Rewire A and B
-    if (leftHeavy) {        // LL case
-        A->left  = B->right;
-        B->right = A;
-    } else {                // RR case
-        A->right = B->left;
-        B->left  = A;
+    // 3. Rewire: move B's inner subtree to A, make A the inner child of B
+    if (leftHeavy) {
+        A->left  = B->right;   // B's right subtree (T2) becomes A's left
+        B->right = A;           // A drops down to B's right
+    } else {
+        A->right = B->left;    // B's left subtree (T2) becomes A's right
+        B->left  = A;           // A drops down to B's left
     }
 
-    // Update heights bottom-up (A is now child of B)
+    // 4. Update heights bottom-up (A moved down, so update A first)
     updateHeight(static_cast<AVLTreeNode<T>*>(A));
     updateHeight(static_cast<AVLTreeNode<T>*>(B));
 }
 
+// --- doubleRotate ---
+// Replaces both balanceLR (leftHeavy = true) and balanceRL (leftHeavy = false).
+//
+// LR (leftHeavy = true):                 RL (leftHeavy = false):
+//       A              C                       A              C
+//      / \           /   \                    / \           /   \
+//     B   T4  →    B       A                T1   B   →   A       B
+//    / \          / \     / \                   / \      / \     / \
+//  T1   C       T1  T2  T3  T4               C   T4  T1  T2  T3  T4
+//      / \                                   / \
+//    T2   T3                               T2   T3
+
+template <typename T>
+void AVLTree<T>::doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
+{
+    // 1. Pick child B (heavy side) and grandchild C (B's opposite side)
+    TreeNode<T>* B = leftHeavy ? A->left  : A->right;
+    TreeNode<T>* C = leftHeavy ? B->right : B->left;
+
+    // 2. Reattach C where A was (parent linkage — identical for both cases)
+    if (A == root)
+        root = C;
+    else if (parentOfA->left == A)
+        parentOfA->left = C;
+    else
+        parentOfA->right = C;
+
+    // 3. Distribute C's subtrees to A and B, then make A and B children of C
+    if (leftHeavy) {
+        A->left  = C->right;   // C's right subtree (T3) → A's left
+        B->right = C->left;    // C's left subtree (T2)  → B's right
+        C->left  = B;           // B becomes C's left child
+        C->right = A;           // A becomes C's right child
+    } else {
+        A->right = C->left;    // C's left subtree (T2)  → A's right
+        B->left  = C->right;   // C's right subtree (T3) → B's left
+        C->left  = A;           // A becomes C's left child
+        C->right = B;           // B becomes C's right child
+    }
+
+    // 4. Update heights bottom-up (A and B moved down, update them before C)
+    updateHeight(static_cast<AVLTreeNode<T>*>(A));
+    updateHeight(static_cast<AVLTreeNode<T>*>(B));
+    updateHeight(static_cast<AVLTreeNode<T>*>(C));
+}
+
+// !!! NOTE: BALANCE PATH FUNCTION MUST BE EDITED TO CALL THESE NEW COMBINED ROTATION FUNCTIONS, SEE BELOW !!!
 
 #endif
