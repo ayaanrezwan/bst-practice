@@ -1,11 +1,86 @@
-#ifndef BST_H  // Header Guard
+#ifndef BST_H
 #define BST_H
 
-#include "treenode.h"
-#include "iterator.h"
 #include <vector>
 #include <stdexcept>
 using namespace std;
+
+// TreeNode class for BST and AVL trees
+template<typename T>
+class TreeNode {
+    public:
+        T element;  // Element which the node holds
+        TreeNode<T>* left;  // Pointer at left child
+        TreeNode<T>* right; // Pointer at right child
+        TreeNode<T>(const T& element);
+};
+
+template <typename T>
+TreeNode<T>::TreeNode(const T& element) {  // Constructor
+    // Store the parameter into node element
+    this -> element = element;
+
+    // Set child pointers to nullptr
+    left = nullptr;
+    right = nullptr;
+}
+
+// Iterator class for BST and AVL trees, used for traversal
+template <typename T>
+class Iterator: public std::iterator<std::forward_iterator_tag, T> {
+    public:
+        // Constructs an iterator that points at a specific node in the tree
+        Iterator(TreeNode<T>* p)
+        {
+            if (p == nullptr) {
+                current = -1; // The end
+            } else {
+                // Get all the elements in inorder
+                treeToVector(p);
+                current = 0;
+            }
+        }
+
+        // Obtains the iterator for the next element in the array
+        Iterator operator++()
+        {
+            current++;
+            if (current == v.size()) {
+                current = -1; // The end
+            }
+            return *this;
+        }
+
+        // Using the * operator returns the element pointed by the iterator
+        T &operator*()
+        {
+            return v[current];
+        }
+
+        // Checks if two iterators are the same (equality)
+        bool operator==(const Iterator<T>& iterator) const
+        {
+            return current == iterator.current;
+        }
+
+        // Checks if two iterators are the same (not equality)
+        bool operator!=(const Iterator<T>& iterator) const
+        {
+            return current != iterator.current;
+        }
+
+    private:
+        int current;
+        vector<T> v;
+        void treeToVector(const TreeNode<T>* p) // Vector that stores nodes in order
+        {
+            if (p != nullptr) {
+                treeToVector(p->left);
+                v.push_back(p->element);
+                treeToVector(p->right);
+            }
+        }
+};
 
 // Class implementation
 template <typename T>

@@ -1,7 +1,5 @@
 #include <iostream>
-#include "treenode.h"
 #include "bst.h"
-#include "iterator.h"
 #include <vector>
 #include <string>
 #include <algorithm>
