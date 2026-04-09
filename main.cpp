@@ -29,6 +29,21 @@ string toUpperCase(const string& s) {// Converting a string to all upper case
   return upper;
 }
 
+// Print function for AVL tree (same as BST but with AVLTree type)
+template <typename T>
+void printTree(const AVLTree<T> &tree)
+{
+  // Traverse tree
+  cout << "\nInorder (sorted): " << endl;
+  tree.inorder();
+  cout << "\nPostorder: " << endl;
+  tree.postorder();
+  cout << "\nPreorder: " << endl;
+  tree.preorder();
+  cout << "\nThe number of nodes is " << tree.getSize();
+  cout << endl;
+}
+
 
 int main() {
     BST<string> tree;
@@ -86,6 +101,37 @@ int main() {
 
     cout << endl << "Min element is " << *min_element(tree2.begin(), tree2.end()) << endl;
     cout << "Max element is " << *max_element(tree2.begin(), tree2.end()) << endl;
+
+
+    // Create an AVL tree
+  int numbers[] = {25, 20, 5};
+  AVLTree<int> tree3(numbers, 3);
+
+  cout << "After inserting 25, 20, 5:" << endl;
+  printTree<int>(tree3);
+
+  tree3.insert(34);
+  tree3.insert(50);
+  cout << "\nAfter inserting 34, 50:" << endl;
+  printTree<int>(tree3);
+
+  tree3.insert(30);
+  cout << "\nAfter inserting 30" << endl;
+  printTree<int>(tree3);
+
+  tree3.insert(10);
+  cout << "\nAfter inserting 10" << endl;
+  printTree<int>(tree3);
+
+  tree3.remove(34);
+  tree3.remove(30);
+  tree3.remove(50);
+  cout << "\nAfter removing 34, 30, 50:" << endl;
+  printTree<int>(tree3);
+
+  tree3.remove(5);
+  cout << "\nAfter removing 5:" << endl;
+  printTree<int>(tree3);
 
     return 0;
 }
