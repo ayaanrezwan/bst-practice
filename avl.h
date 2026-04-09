@@ -56,8 +56,11 @@ public:
   // Balance RL (see Figure 26.4) 
   void balanceRL(TreeNode<T>* A, TreeNode<T>* parentOfA);
 
+  // Implementing a double rotate used for LR or RL
+  void doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy);
 
-  
+    // Implementing a single rotate used for LL or RR
+  void singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy);
 };
 
 template <typename T>
@@ -321,5 +324,68 @@ bool AVLTree<T>::remove(const T& e)
   size--;
   return true; // Element inserted
 }
+
+template <typename T>
+void AVLTree<T>::doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
+{
+    // Pick child and grandchild based on imbalance direction
+    TreeNode<T>* B = leftHeavy ? A->left  : A->right;
+    TreeNode<T>* C = leftHeavy ? B->right : B->left;
+
+    // Reattach C to parent (identical in all 4 rotations)
+    if (A == root)
+        root = C;
+    else if (parentOfA->left == A)
+        parentOfA->left = C;
+    else
+        parentOfA->right = C;
+
+    // Rewire A, B, C
+    if (leftHeavy) {        // LR case
+        A->left  = C->right;
+        B->right = C->left;
+        C->left  = B;
+        C->right = A;
+    } else {                // RL case
+        A->right = C->left;
+        B->left  = C->right;
+        C->left  = A;
+        C->right = B;
+    }
+
+    // Update heights bottom-up (A and B are now children of C)
+    updateHeight(static_cast<AVLTreeNode<T>*>(A));
+    updateHeight(static_cast<AVLTreeNode<T>*>(B));
+    updateHeight(static_cast<AVLTreeNode<T>*>(C));
+}
+
+template <typename T>
+void AVLTree<T>::singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
+{
+    // Pick child based on imbalance direction
+    TreeNode<T>* B = leftHeavy ? A->left : A->right;
+
+    // Reattach B to parent (identical in both LL and RR cases)
+    if (A == root)
+        root = B;
+    else if (parentOfA->left == A)
+        parentOfA->left = B;
+    else
+        parentOfA->right = B;
+
+    // Rewire A and B
+    if (leftHeavy) {        // LL case
+        A->left  = B->right;
+        B->right = A;
+    } else {                // RR case
+        A->right = B->left;
+        B->left  = A;
+    }
+
+    // Update heights bottom-up (A is now child of B)
+    updateHeight(static_cast<AVLTreeNode<T>*>(A));
+    updateHeight(static_cast<AVLTreeNode<T>*>(B));
+}
+
 
 #endif
