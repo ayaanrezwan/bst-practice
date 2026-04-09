@@ -292,19 +292,11 @@ bool AVLTree<T>::remove(const T& e)
   return true;
 }
 
-// ============================================================
+
 // COMBINED ROTATION FUNCTIONS
-// ============================================================
 
 // --- singleRotate ---
 // Replaces both balanceLL (leftHeavy = true) and balanceRR (leftHeavy = false).
-//
-// LL (leftHeavy = true):        RR (leftHeavy = false):
-//       A            B               A           B
-//      / \          / \              / \         / \
-//     B   T3  →   C   A            T1  B   →   A   C
-//    / \             / \               / \    / \
-//   C   T2         T2  T3            T2  C   T1  T2
 
 template <typename T>
 void AVLTree<T>::singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
@@ -336,15 +328,6 @@ void AVLTree<T>::singleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftH
 
 // --- doubleRotate ---
 // Replaces both balanceLR (leftHeavy = true) and balanceRL (leftHeavy = false).
-//
-// LR (leftHeavy = true):                 RL (leftHeavy = false):
-//       A              C                       A              C
-//      / \           /   \                    / \           /   \
-//     B   T4  →    B       A                T1   B   →   A       B
-//    / \          / \     / \                   / \      / \     / \
-//  T1   C       T1  T2  T3  T4               C   T4  T1  T2  T3  T4
-//      / \                                   / \
-//    T2   T3                               T2   T3
 
 template <typename T>
 void AVLTree<T>::doubleRotate(TreeNode<T>* A, TreeNode<T>* parentOfA, bool leftHeavy)
